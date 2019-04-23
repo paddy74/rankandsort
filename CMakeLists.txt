@@ -65,6 +65,21 @@ target_include_directories(${PROJECT_NAME_L}
 
 target_compile_features(${PROJECT_NAME_L} PRIVATE cxx_auto_type)
 
+# Include external libs
+# ---------------------
+target_include_directories(${PROJECT_NAME_L}
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs/lowletorfeats/include
+)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/lowletorfeats)
+
+# Link
+target_link_libraries(${PROJECT_NAME_L}
+    PUBLIC
+        lowletorfeats
+)
+
 # -----------------------------------------------------------------------------
 # Installation instructions
 # -----------------------------------------------------------------------------

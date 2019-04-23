@@ -1,3 +1,6 @@
 [submodule "libs/textalyzer"]
 	path = libs/textalyzer
 	url = https://github.com/paddy74/textalyzer.git
+[submodule "libs/lowletorfeats"]
+	path = libs/lowletorfeats
+	url = https://github.com/paddy74/lowletorfeats.git
