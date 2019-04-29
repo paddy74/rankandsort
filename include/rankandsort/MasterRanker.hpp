@@ -3,7 +3,7 @@
 #include <rankandsort/base/stdDef.hpp>
 
 #include <textalyzer/Analyzer.hpp>
-#include <lowletorfeats/FeatureCollector.hpp>
+#include <lowletorfeats/base/stdllf.hpp>
 
 #include <string>
 #include <unordered_map>
@@ -20,6 +20,11 @@ namespace rankandsort
 class MasterRanker
 {
 public:
+    /* Public static class variables */
+
+    std::array<std::string, 2> static const RANKERS;
+
+
     /* Constructors */
 
     MasterRanker(
@@ -37,35 +42,25 @@ public:
     void rankWith(
         std::string const & rankerName, std::size_t const & upperSize);
 
-
-    /* Public getters */
-
-    std::vector<std::string> getAvailableRankers() const;
-
 private:
     /* Private member variables */
 
     std::string queryText;
-    base::ResultPage resultPage;
+    lowletorfeats::base::StrUintMap queryTfMap;
+    base::SentenceMatrix querySentenceMatrix;
 
-    lowletorfeats::FeatureCollector lowFC;
-    //highletorfeats::FeatureCollector highFC;
+    base::ResultPage resultPage;
 
 
     /* Private static member variables */
 
     textalyzer::AnlyzerFunType<std::string> static const analyzerFun;
 
-    std::unordered_map<
-        std::string,
-        std::function<void(MasterRanker &, std::size_t const &)>
-    > static const RANKER_MAP;
-
 
     /* Private class methods */
 
-    void initLowFC();
-    void initHighFC();
+    void rankTfidf(std::size_t const & upperSize);
+    void rankBm25f(std::size_t const & upperSize);
 };
 
 }

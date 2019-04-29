@@ -1,12 +1,18 @@
 #include <rankandsort/MasterRanker.hpp>
 
-#include "rankWith.hpp"
-
 #include <lowletorfeats/base/utillf.hpp>
+#include <textalyzer/utils.hpp>
 
 
 namespace rankandsort
 {
+
+/* Public static class variables */
+
+std::array<std::string, 2> const MasterRanker::RANKERS = {
+    "tfidf", "bm25f"
+};
+
 
 /* Constructors */
 
@@ -18,8 +24,11 @@ MasterRanker::MasterRanker(
     this->queryText = queryText;
     this->resultPage = fullResultPage;
 
-    // Construct the low-level feature collector
-    this->initLowFC();
+    // Calculate `queryTfMap`
+    this->queryTfMap = textalyzer::asFrequencyMap(
+        MasterRanker::analyzerFun(queryText, 2).first);
+
+    // Construct the `querySentenceMatrix`
 }
 
 
@@ -27,28 +36,18 @@ MasterRanker::MasterRanker(
 
 void MasterRanker::rank()
 {
-    auto const stage1 = MasterRanker::RANKER_MAP.at("tfidf");
-    auto const stage2 = MasterRanker::RANKER_MAP.at("bm25f");
-
-    stage1(*this, 50);
-    stage2(*this, 25);
+    this->rankWith("tfidf", 50);
+    this->rankWith("bm25f", 25);
 }
 
 
 void MasterRanker::rankWith(
     std::string const & rankerName, std::size_t const & upperSize)
 {
-    auto const ranker = MasterRanker::RANKER_MAP.at(rankerName);
-    ranker(*this, upperSize);
-}
-
-
-/* Public getters */
-
-std::vector<std::string> MasterRanker::getAvailableRankers() const
-{
-    return lowletorfeats::base::Utillf::getKeyVect(
-        MasterRanker::RANKER_MAP);
+    if (rankerName == "tfidf")
+        this->rankTfidf(upperSize);
+    else if (rankerName == "bm25f")
+        this->rankBm25f(upperSize);
 }
 
 
@@ -56,24 +55,5 @@ std::vector<std::string> MasterRanker::getAvailableRankers() const
 
 textalyzer::AnlyzerFunType<std::string> const MasterRanker::analyzerFun
     = textalyzer::Analyzer::medAnalyze;
-
-
-std::unordered_map<
-    std::string,
-    std::function<void(MasterRanker &, std::size_t const &)>
-> const RANKER_MAP =
-{
-    { "tfidf", rankTfidf},
-    { "bm25f", rankBm25f}
-};
-
-
-/* Private class methods */
-
-void MasterRanker::initLowFC()
-{
-    lowletorfeats::FeatureCollector::setAnalyzerFunction(this->analyzerFun);
-    lowFC = lowletorfeats::FeatureCollector(this->resultPage, this->queryText);
-}
 
 }
