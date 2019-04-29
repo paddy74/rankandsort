@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
-project(FullCCRank VERSION 0.1 LANGUAGES CXX)
-set(PROJECT_NAME_L fullccrank)
+project(RankAndSort VERSION 0.1 LANGUAGES CXX)
+set(PROJECT_NAME_L rankandsort)
 
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -39,6 +39,8 @@ endif()
 # -----------------------
 set(libsrc
     src/MasterRanker.cpp
+    src/rankWith.cpp
+    src/rankandsort.cpp
 )
 
 # Add the library
@@ -76,7 +78,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/lowletorfeats)
 
 # Link
 target_link_libraries(${PROJECT_NAME_L}
-    PUBLIC
+    PRIVATE
         lowletorfeats
 )
 
