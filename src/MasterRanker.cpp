@@ -3,6 +3,8 @@
 #include <lowletorfeats/base/utillf.hpp>
 #include <textalyzer/utils.hpp>
 
+#include <algorithm>
+
 
 namespace rankandsort
 {
@@ -44,10 +46,21 @@ void MasterRanker::rank()
 void MasterRanker::rankWith(
     std::string const & rankerName, std::size_t const & upperSize)
 {
+    /* Low FC */
+
+    // Select the lowFC
+    std::string fKeyStr;
     if (rankerName == "tfidf")
-        this->rankTfidf(upperSize);
+        fKeyStr = "tfidf.tfidf.full";
     else if (rankerName == "bm25f")
-        this->rankBm25f(upperSize);
+        fKeyStr = "okapi.bm25f.full";
+
+    // Collect r-scores
+    this->rankLow(upperSize, fKeyStr);
+
+    // Sort by the r-score
+    std::sort(this->resultPage.begin(), this->resultPage.end() + upperSize,
+        MasterRanker::RscoreCompare());
 }
 
 

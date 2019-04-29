@@ -59,8 +59,17 @@ private:
 
     /* Private class methods */
 
-    void rankTfidf(std::size_t const & upperSize);
-    void rankBm25f(std::size_t const & upperSize);
+    void rankLow(std::size_t const & upperSize, std::string const & fKeyStr);
+
+
+    /* Private class structures */
+
+    struct RscoreCompare
+    {
+        inline bool operator() (
+            base::DocData const & a, base::DocData const & b)
+        { return (a.at("rscore") < b.at("rscore")); }
+    };
 };
 
 }
