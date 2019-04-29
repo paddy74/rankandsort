@@ -1,4 +1,4 @@
-#include <fullccrank/MasterRanker.hpp>
+#include <rankandsort/MasterRanker.hpp>
 
 
 int main(int argc, const char * argv[])

@@ -1,6 +1,8 @@
-add_executable(fullccrank.test_main src/main.cpp)
+add_executable(rankandsort.test_main src/test_main.cpp)
 
-target_link_libraries(fullccrank.test_main fullccrank)
+target_link_libraries(rankandsort.test_main rankandsort)
+target_link_libraries(rankandsort.test_main lowletorfeats)
+target_link_libraries(rankandsort.test_main textalyzer)
 
 enable_testing()
-add_test(test_main fullccrank.test_main)
+add_test(test_main rankandsort.test_main)
