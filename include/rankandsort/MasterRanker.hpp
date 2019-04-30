@@ -3,7 +3,7 @@
 #include <rankandsort/base/stdDef.hpp>
 
 #include <textalyzer/Analyzer.hpp>
-#include <lowletorfeats/base/stdllf.hpp>
+#include <lowletorfeats/base/stdDef.hpp>
 
 #include <string>
 #include <unordered_map>

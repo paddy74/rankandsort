@@ -1,6 +1,5 @@
 #include <rankandsort/MasterRanker.hpp>
 
-#include <lowletorfeats/base/utillf.hpp>
 #include <textalyzer/utils.hpp>
 
 #include <algorithm>
