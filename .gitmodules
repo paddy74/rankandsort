@@ -4,3 +4,6 @@
 [submodule "libs/lowletorfeats"]
 	path = libs/lowletorfeats
 	url = https://github.com/paddy74/lowletorfeats.git
+[submodule "libs/cpp11-range"]
+	path = libs/cpp11-range
+	url = https://github.com/klmr/cpp11-range.git
