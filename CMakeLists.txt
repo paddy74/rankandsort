@@ -39,7 +39,6 @@ endif()
 # -----------------------
 set(libsrc
     src/MasterRanker.cpp
-    src/rankWith.cpp
     src/rankandsort.cpp
 )
 

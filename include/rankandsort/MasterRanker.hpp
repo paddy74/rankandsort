@@ -59,7 +59,7 @@ private:
 
     /* Private class methods */
 
-    void rankLow(std::string const & fKeyStr, std::size_t upperSize);
+    void calcLowRscores(std::string const & fKeyStr, std::size_t upperSize);
 
 
     /* Private class structures */
