@@ -27,10 +27,14 @@ public:
 
     /* Constructors */
 
+    MasterRanker();
+
     MasterRanker(
         std::string const & queryText,
         base::ResultPage fullResultPage
     );
+
+    MasterRanker(MasterRanker const & other);
 
 
     /* Public class methods */
@@ -42,19 +46,25 @@ public:
     void rankandsortWith(
         std::string const & rankerName, std::size_t upperSize);
 
+
+    /* Public static methods */
+
+    void static setAnalyzerFunction(
+        textalyzer::AnlyzerFunType<std::string> const & analyzerFunction);
+
 private:
     /* Private member variables */
 
     std::string queryText;
     lowletorfeats::base::StrUintMap queryTfMap;
-    base::SentenceMatrix querySentenceMatrix;
+    //base::SentenceMatrix querySentenceMatrix;  // TODO: How to handle
 
     base::ResultPage resultPage;
 
 
     /* Private static member variables */
 
-    textalyzer::AnlyzerFunType<std::string> static const analyzerFun;
+    textalyzer::AnlyzerFunType<std::string> static analyzerFun;
 
 
     /* Private class methods */
@@ -73,6 +83,8 @@ private:
         inline bool operator() (
             base::DocData const & a, base::DocData const & b)
         {
+            if (a.count("rscore") == 0 || b.count("rscore") == 0)
+                return false;
             return (a.at("rscore") < b.at("rscore"));
         }
     };

@@ -14,6 +14,10 @@ namespace rankandsort
 
 /* Public static class variables */
 
+/**
+ * @brief String names of the supported ranking methods.
+ *
+ */
 std::array<std::string, 2> const MasterRanker::RANKERS = {
     "tfidf", "bm25f"
 };
@@ -21,6 +25,38 @@ std::array<std::string, 2> const MasterRanker::RANKERS = {
 
 /* Constructors */
 
+/**
+ * @brief Construct a new instance empty MasterRanker.
+ *
+ */
+MasterRanker::MasterRanker()  // TODO: Fully define
+{
+    this->queryText = "";
+}
+
+
+/**
+ * @brief Construct a new Master Ranker using the default constructor.
+ *
+ * @param queryText String representation of the query.
+ * @param fullResultPage Preanalyzed result page in the following format:
+ *  {
+ *      "id": string,
+ *      "rscore": float,
+ *      # Necessary for HighFC
+ *      "sentence_matrix": [
+ *          [string, ..., string],
+ *          ...,
+ *          [string, ..., string]
+ *      ],
+ *      # Necessary for LowFC
+ *      "url_tokens": [string, ..., string],
+ *      "title_tokens": [string, ..., string],
+ *      "author_tokens": [string, ..., string],
+ *      "anchor_tokens": [string, ..., string],
+ *      "body_tokens": [string, ..., string]
+ *  }
+ */
 MasterRanker::MasterRanker(
     std::string const & queryText,
     base::ResultPage fullResultPage
@@ -32,8 +68,19 @@ MasterRanker::MasterRanker(
     // Calculate `queryTfMap`
     this->queryTfMap = textalyzer::asFrequencyMap(
         MasterRanker::analyzerFun(queryText, 2).first);
+}
 
-    // Construct the `querySentenceMatrix`
+
+/**
+ * @brief Copy constructor.
+ *
+ * @param other
+ */
+MasterRanker::MasterRanker(MasterRanker const & other)
+{
+    this->queryText = other.queryText;
+    this->queryTfMap = other.queryTfMap;
+    this->resultPage = other.resultPage;
 }
 
 
@@ -88,9 +135,25 @@ void MasterRanker::rankandsortWith(
 }
 
 
+/* Public static methods */
+
+/**
+ * @brief Set the `MasterRanker::analyzerFun` private static variable.
+ *
+ * @param analyzerFunction
+ */
+void MasterRanker::setAnalyzerFunction(
+    textalyzer::AnlyzerFunType<std::string> const & analyzerFunction)
+{ MasterRanker::analyzerFun = analyzerFunction; }
+
+
 /* Private static member variables */
 
-textalyzer::AnlyzerFunType<std::string> const MasterRanker::analyzerFun
+/**
+ * @brief The default analyzer function to be used.
+ *
+ */
+textalyzer::AnlyzerFunType<std::string> MasterRanker::analyzerFun
     = textalyzer::Analyzer::medAnalyze;
 
 
