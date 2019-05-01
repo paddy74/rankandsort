@@ -7,7 +7,7 @@
 
 #include <string>
 #include <unordered_map>
-
+#include <iostream>
 
 namespace rankandsort
 {
@@ -36,11 +36,11 @@ public:
     /* Public class methods */
 
     // Rank and sort the results using the preset multi-stage ranking process
-    void rank();
+    void defaultRankandsort();
 
-    // Rank and sort only using the given ranker
-    void rankWith(
-        std::string const & rankerName, std::size_t const & upperSize);
+    // Rank and sort using only the given ranker
+    void rankandsortWith(
+        std::string const & rankerName, std::size_t upperSize);
 
 private:
     /* Private member variables */
@@ -59,16 +59,22 @@ private:
 
     /* Private class methods */
 
-    void rankLow(std::size_t const & upperSize, std::string const & fKeyStr);
+    void rankLow(std::string const & fKeyStr, std::size_t upperSize);
 
 
     /* Private class structures */
 
+    /**
+     * @brief Compare two `DocData` instances using their r-score.
+     *
+     */
     struct RscoreCompare
     {
         inline bool operator() (
             base::DocData const & a, base::DocData const & b)
-        { return (a.at("rscore") < b.at("rscore")); }
+        {
+            return (a.at("rscore") < b.at("rscore"));
+        }
     };
 };
 

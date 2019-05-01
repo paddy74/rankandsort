@@ -35,16 +35,36 @@ MasterRanker::MasterRanker(
 
 /* Public class methods */
 
-void MasterRanker::rank()
+/**
+ * @brief Rank and sort the result page using the preset multi-stage ranking
+ *  process.
+ *  Stage 0: Documents expected to be presorted using a static pointwise method.
+ *  Stage 1: Rank and sort top 50 documents with TF/IDF.
+ *  Stage 2: Rank and sort top 25 documents with BM25F.
+ *  Stage 3: Rank and sort top 10 documents with a machine learned model.
+ *
+ */
+void MasterRanker::defaultRankandsort()
 {
-    this->rankWith("tfidf", 50);
-    this->rankWith("bm25f", 25);
+    this->rankandsortWith("tfidf", 50);
+    this->rankandsortWith("bm25f", 25);
 }
 
 
-void MasterRanker::rankWith(
-    std::string const & rankerName, std::size_t const & upperSize)
+/**
+ * @brief Rank and sort using the named ranker. If the rankerName is not found
+ *  in `MasterRanker::RANKERS` then do nothing.
+ *
+ * @param rankerName
+ * @param upperSize
+ */
+void MasterRanker::rankandsortWith(
+    std::string const & rankerName, std::size_t upperSize)
 {
+    // Handle upperSize that is too large
+    if (upperSize > this->resultPage.size())
+        upperSize = resultPage.size();  // To large, set to .end()
+
     /* Low FC */
 
     // Select the lowFC
@@ -53,12 +73,13 @@ void MasterRanker::rankWith(
         fKeyStr = "tfidf.tfidf.full";
     else if (rankerName == "bm25f")
         fKeyStr = "okapi.bm25f.full";
+    else return;  // Do nothing - break from function, not supported.
 
-    // Collect r-scores
-    this->rankLow(upperSize, fKeyStr);
+    // Calculate r-scores in each document
+    this->rankLow(fKeyStr, upperSize);
 
-    // Sort by the r-score
-    std::sort(this->resultPage.begin(), this->resultPage.end() + upperSize,
+    // Sort the result page by the r-score
+    std::sort(this->resultPage.begin(), this->resultPage.begin() + upperSize,
         MasterRanker::RscoreCompare());
 }
 

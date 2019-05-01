@@ -10,17 +10,20 @@ namespace rankandsort
 {
 
 void MasterRanker::rankLow(
-    std::size_t const & upperSize,
-    std::string const & fKeyStr)
+    std::string const & fKeyStr, std::size_t upperSize)
 {
+    // Handle upperSize that is too large
+    if (upperSize > this->resultPage.size())
+        upperSize = resultPage.size();  // To large, set to .end()
+
     lowletorfeats::base::FeatureKey fKey(fKeyStr);
 
     // Create the lowFC from the upperSize range
     base::ResultPage upperResultPage(
-        this->resultPage.begin(), this->resultPage.end() + upperSize);
+        this->resultPage.begin(), this->resultPage.begin() + upperSize);
     lowletorfeats::FeatureCollector lowFC(upperResultPage, this->queryTfMap);
 
-    // Ensure the analyzer is set
+    // Set the analyzer of lowFC
     lowFC.setAnalyzerFunction(MasterRanker::analyzerFun);
 
     // Collect the features for the given key

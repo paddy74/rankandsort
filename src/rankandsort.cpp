@@ -12,7 +12,7 @@ void rankandsort(
 )
 {
     MasterRanker ranker(queryText, resultPage);
-    ranker.rank();
+    ranker.defaultRankandsort();
 }
 
 }
