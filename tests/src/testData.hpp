@@ -15,6 +15,7 @@ std::pair<std::string, std::vector<lowletorfeats::base::StrStrMap> >
     std::vector<StrStrMap> structDocTextVector{
         lowletorfeats::base::StrStrMap{
             {"id", "0"},
+            {"rscore", "1"},
             {"url", "https://arxiv.org/pdf/1904.12735.pdf"},
             {"title",
              "DeepHMap++: Combined Projection Grouping and Correspondence "
@@ -51,6 +52,7 @@ std::pair<std::string, std::vector<lowletorfeats::base::StrStrMap> >
              "methods"}},
         lowletorfeats::base::StrStrMap{
             {"id", "1"},
+            {"rscore", "0"},
             {"url", "https://arxiv.org/pdf/1904.12589.pdf"},
             {"title",
              "A dual branch deep neural network forclassification and "

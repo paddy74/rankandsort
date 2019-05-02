@@ -49,7 +49,7 @@ MasterRanker::MasterRanker()  // TODO: Fully define
  *  }
  */
 MasterRanker::MasterRanker(
-    std::string const & queryText, base::ResultPage fullResultPage)
+    std::string const & queryText, base::ResultPage const & fullResultPage)
 {
     this->queryText = queryText;
     this->resultPage = fullResultPage;
@@ -84,8 +84,13 @@ MasterRanker::MasterRanker(MasterRanker const & other)
  */
 void MasterRanker::defaultRankandsort()
 {
+    std::cerr << this << " MasterRanker::MasterRanker" << std::endl;
+    std::cerr << &MasterRanker::analyzerFun << " MasterRanker::analyzerFun"
+              << std::endl;
+    std::cerr << &MasterRanker::RANKERS << " MasterRanker::RANKERS"
+              << std::endl;
     this->rankandsortWith("tfidf", 50);
-    this->rankandsortWith("bm25f", 25);
+    // this->rankandsortWith("bm25f", 25);
 }
 
 /**
@@ -98,9 +103,9 @@ void MasterRanker::defaultRankandsort()
 void MasterRanker::rankandsortWith(
     std::string const & rankerName, std::size_t upperSize)
 {
-    // Handle upperSize that is too large
-    if (upperSize > this->resultPage.size())
-        upperSize = resultPage.size();  // To large, set to .end()
+    // Handle upperSize that is too large or 0
+    if (upperSize > this->resultPage.size() || upperSize == 0)
+        upperSize = resultPage.size();  // To large or 0, set to .end()
 
     /* Low FC */  // TODO: Handle High FC
 
@@ -115,7 +120,7 @@ void MasterRanker::rankandsortWith(
 
     // Calculate r-scores in each document
     this->calcLowRscores(fKeyStr, upperSize);
-
+    std::cerr << "MasterRanker::rankandsortWith" << std::endl;
     // Sort the result page by the r-score
     std::sort(
         this->resultPage.begin(), this->resultPage.begin() + upperSize,
@@ -153,18 +158,22 @@ void MasterRanker::calcLowRscores(
     if (upperSize > this->resultPage.size())
         upperSize = resultPage.size();  // To large, set to .end()
 
-    lowletorfeats::base::FeatureKey fKey(fKeyStr);
-
     // Create the lowFC from the upperSize range
-    base::ResultPage upperResultPage(
+    base::ResultPage upperResultPage(  // TODO: View not copy
         this->resultPage.begin(), this->resultPage.begin() + upperSize);
-    lowletorfeats::FeatureCollector lowFC(upperResultPage, this->queryTfMap);
 
+    std::cerr << &upperResultPage << " upperResultPage" << std::endl;
+    std::cerr << &this->resultPage[0] << " this->resultPage[0]" << std::endl;
+    std::cerr << &upperResultPage[0] << " upperResultPage[0]" << std::endl;
+
+    lowletorfeats::FeatureCollector lowFC(upperResultPage, this->queryTfMap);
+    std::cerr << "PASS: MasterRanker::analyzerFun" << std::endl;
     // Set the analyzer of lowFC
     lowFC.setAnalyzerFunction(MasterRanker::analyzerFun);
 
     // Collect the features for the given key
-    lowFC.collectFeatures(fKey);
+    lowletorfeats::base::FeatureKey fKey(fKeyStr);
+    lowFC.collectFeatures(fKey);  // TODO: String overload
 
     // Assign the r-scores
     auto const & lowFCDocs = lowFC.getDocVect();

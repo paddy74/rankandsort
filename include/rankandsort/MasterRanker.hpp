@@ -25,8 +25,9 @@ public:
 
     MasterRanker();
 
-    MasterRanker(
-        std::string const & queryText, base::ResultPage fullResultPage);
+    MasterRanker(  // TODO: Memory savings &this->resultPage == &fullResultPage
+        std::string const & queryText,
+        base::ResultPage const & fullResultPage);
 
     MasterRanker(MasterRanker const & other);
 

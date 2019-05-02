@@ -13,7 +13,7 @@ int main()
             if (doc.count("id") == 0)
                 std::cout << "noid" << ' ';
             else
-                std::cout << doc.at("id") << ' ';
+                std::cout << doc.at("id") << ':' << doc.at("rscore") << ' ';
         }
     std::cout << std::endl;
 
@@ -25,7 +25,7 @@ int main()
             if (doc.count("id") == 0)
                 std::cout << "noid" << ' ';
             else
-                std::cout << doc.at("id") << ' ';
+                std::cout << doc.at("id") << ':' << doc.at("rscore") << ' ';
         }
     std::cout << std::endl;
 
