@@ -1,27 +1,19 @@
-#include <rankandsort/MasterRanker.hpp>
-
+#include <algorithm>
+#include <cpp11-range/range.hpp>  // util::lang::indices
 #include <lowletorfeats/FeatureCollector.hpp>
 #include <lowletorfeats/base/FeatureKey.hpp>
+#include <rankandsort/MasterRanker.hpp>
 #include <textalyzer/utils.hpp>
-
-#include <cpp11-range/range.hpp>  // util::lang::indices
-
-#include <algorithm>
-
 
 namespace rankandsort
 {
-
 /* Public static class variables */
 
 /**
  * @brief String names of the supported ranking methods.
  *
  */
-std::array<std::string, 2> const MasterRanker::RANKERS = {
-    "tfidf", "bm25f"
-};
-
+std::array<std::string, 2> const MasterRanker::RANKERS = {"tfidf", "bm25f"};
 
 /* Constructors */
 
@@ -33,7 +25,6 @@ MasterRanker::MasterRanker()  // TODO: Fully define
 {
     this->queryText = "";
 }
-
 
 /**
  * @brief Construct a new Master Ranker using the default constructor.
@@ -58,9 +49,7 @@ MasterRanker::MasterRanker()  // TODO: Fully define
  *  }
  */
 MasterRanker::MasterRanker(
-    std::string const & queryText,
-    base::ResultPage fullResultPage
-)
+    std::string const & queryText, base::ResultPage fullResultPage)
 {
     this->queryText = queryText;
     this->resultPage = fullResultPage;
@@ -69,7 +58,6 @@ MasterRanker::MasterRanker(
     this->queryTfMap = textalyzer::asFrequencyMap(
         MasterRanker::analyzerFun(queryText, 2).first);
 }
-
 
 /**
  * @brief Copy constructor.
@@ -83,16 +71,15 @@ MasterRanker::MasterRanker(MasterRanker const & other)
     this->resultPage = other.resultPage;
 }
 
-
 /* Public class methods */
 
 /**
  * @brief Rank and sort the result page using the preset multi-stage ranking
  *  process.
- *  Stage 0: Documents expected to be presorted using a static pointwise method.
- *  Stage 1: Rank and sort top 50 documents with TF/IDF.
- *  Stage 2: Rank and sort top 25 documents with BM25F.
- *  Stage 3: Rank and sort top 10 documents with a machine learned model.
+ *  Stage 0: Documents expected to be presorted using a static pointwise
+ * method. Stage 1: Rank and sort top 50 documents with TF/IDF. Stage 2: Rank
+ * and sort top 25 documents with BM25F. Stage 3: Rank and sort top 10
+ * documents with a machine learned model.
  *
  */
 void MasterRanker::defaultRankandsort()
@@ -100,7 +87,6 @@ void MasterRanker::defaultRankandsort()
     this->rankandsortWith("tfidf", 50);
     this->rankandsortWith("bm25f", 25);
 }
-
 
 /**
  * @brief Rank and sort using the named ranker. If the rankerName is not found
@@ -124,16 +110,17 @@ void MasterRanker::rankandsortWith(
         fKeyStr = "tfidf.tfidf.full";
     else if (rankerName == "bm25f")
         fKeyStr = "okapi.bm25f.full";
-    else return;  // Do nothing - break from function, not supported.
+    else
+        return;  // Do nothing - break from function, not supported.
 
     // Calculate r-scores in each document
     this->calcLowRscores(fKeyStr, upperSize);
 
     // Sort the result page by the r-score
-    std::sort(this->resultPage.begin(), this->resultPage.begin() + upperSize,
+    std::sort(
+        this->resultPage.begin(), this->resultPage.begin() + upperSize,
         MasterRanker::RscoreCompare());
 }
-
 
 /* Public static methods */
 
@@ -144,8 +131,9 @@ void MasterRanker::rankandsortWith(
  */
 void MasterRanker::setAnalyzerFunction(
     textalyzer::AnlyzerFunType<std::string> const & analyzerFunction)
-{ MasterRanker::analyzerFun = analyzerFunction; }
-
+{
+    MasterRanker::analyzerFun = analyzerFunction;
+}
 
 /* Private static member variables */
 
@@ -153,9 +141,8 @@ void MasterRanker::setAnalyzerFunction(
  * @brief The default analyzer function to be used.
  *
  */
-textalyzer::AnlyzerFunType<std::string> MasterRanker::analyzerFun
-    = textalyzer::Analyzer::medAnalyze;
-
+textalyzer::AnlyzerFunType<std::string> MasterRanker::analyzerFun =
+    textalyzer::Analyzer::medAnalyze;
 
 /* Private class methods */
 
@@ -185,4 +172,4 @@ void MasterRanker::calcLowRscores(
         this->resultPage[i]["rscore"] = lowFCDocs[i].getFeatureValue(fKey);
 }
 
-}
+}  // namespace rankandsort
