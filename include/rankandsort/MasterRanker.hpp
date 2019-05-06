@@ -60,7 +60,9 @@ private:
 
     /* Private class methods */
 
-    void calcLowRscores(std::string const & fKeyStr, std::size_t upperSize);
+    void calcLowRscores(
+        lowletorfeats::base::FeatureKey const & fKeyStr,
+        std::size_t upperSize);
 
     /* Private class structures */
 
