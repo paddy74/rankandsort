@@ -18,15 +18,6 @@ std::array<std::string, 2> const MasterRanker::RANKERS = {"tfidf", "bm25f"};
 /* Constructors */
 
 /**
- * @brief Construct a new instance empty MasterRanker.
- *
- */
-MasterRanker::MasterRanker()  // TODO: Fully define
-{
-    this->queryText = "";
-}
-
-/**
  * @brief Construct a new Master Ranker using the default constructor.
  *
  * @param queryText String representation of the query.
@@ -49,10 +40,10 @@ MasterRanker::MasterRanker()  // TODO: Fully define
  *  }
  */
 MasterRanker::MasterRanker(
-    std::string const & queryText, base::ResultPage const & fullResultPage)
+    std::string const & queryText, base::ResultPage & fullResultPage)
+    : resultPage(fullResultPage)
 {
     this->queryText = queryText;
-    this->resultPage = fullResultPage;
 
     // Calculate `queryTfMap`
     this->queryTfMap = textalyzer::asFrequencyMap(
@@ -65,10 +56,10 @@ MasterRanker::MasterRanker(
  * @param other
  */
 MasterRanker::MasterRanker(MasterRanker const & other)
+    : resultPage(other.resultPage)
 {
     this->queryText = other.queryText;
     this->queryTfMap = other.queryTfMap;
-    this->resultPage = other.resultPage;
 }
 
 /* Public class methods */
@@ -165,10 +156,10 @@ void MasterRanker::calcLowRscores(
     // Assign the r-scores
     auto const & lowFCDocs = lowFC.getDocVect();
     for (auto const & i : util::lang::indices(lowFCDocs))
-        {
-            this->resultPage[i]["rscore"] =
-                std::to_string(lowFCDocs[i].getFeatureValue(fKey));
-        }
+    {
+        this->resultPage[i]["rscore"] =
+            std::to_string(lowFCDocs[i].getFeatureValue(fKey));
+    }
 }
 
 }  // namespace rankandsort

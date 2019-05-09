@@ -23,11 +23,10 @@ public:
 
     /* Constructors */
 
-    MasterRanker();
+    // MasterRanker();  // TODO: Not possible as this->resultPage is reference
 
-    MasterRanker(  // TODO: Memory savings &this->resultPage == &fullResultPage
-        std::string const & queryText,
-        base::ResultPage const & fullResultPage);
+    MasterRanker(
+        std::string const & queryText, base::ResultPage & fullResultPage);
 
     MasterRanker(MasterRanker const & other);
 
@@ -52,7 +51,7 @@ private:
     lowletorfeats::base::StrUintMap queryTfMap;
     // base::SentenceMatrix querySentenceMatrix;  // TODO: How to handle
 
-    base::ResultPage resultPage;
+    base::ResultPage & resultPage;  // TODO: Poor form
 
     /* Private static member variables */
 
