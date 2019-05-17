@@ -45,6 +45,13 @@ public:
         textalyzer::AnlyzerFunType<std::string> const & analyzerFunction);
 
 private:
+    // Indicates the feature level to use for sortWithLMART
+    enum FeatureLevel
+    {
+        low,
+        high
+    };
+
     /* Private member variables */
 
     std::string queryText;
@@ -58,9 +65,18 @@ private:
 
     /* Private class methods */
 
+    base::ResultPage getUpperRpage(std::size_t & upperSize);
+
+    void calcDTreeRscores(
+        FeatureLevel const & featureLevel, std::size_t upperSize);
+
     void calcLowRscores(
         lowletorfeats::base::FeatureKey const & fKeyStr,
         std::size_t upperSize);
+
+    /* Private static class methods */
+
+    void static throwUnsupportedRanker(std::string const & rankerName);
 
     /* Private class structures */
 

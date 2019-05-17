@@ -76,7 +76,8 @@ MasterRanker::MasterRanker(MasterRanker const & other)
 void MasterRanker::defaultRankandsort()
 {
     this->rankandsortWith("tfidf", 50);
-    // this->rankandsortWith("bm25f", 25);
+    this->rankandsortWith("bm25f", 25);
+    // this->rankandsortWith("lowhigh", 10);
 }
 
 /**
@@ -94,19 +95,29 @@ void MasterRanker::rankandsortWith(
         upperSize = resultPage.size();  // To large or 0, set to .end()
 
     // If not in lowFC rankers
-    // TODO: Handle highFC
-
-    // Select the lowFC
-    lowletorfeats::base::FeatureKey fKey;
-    if (rankerName == "tfidf")
-        fKey = lowletorfeats::base::FeatureKey("tfidf", "tfidf", "full");
-    else if (rankerName == "bm25f")
-        fKey = lowletorfeats::base::FeatureKey("okapi", "bm25f", "full");
+    if (rankerName == "lowhigh")
+    {
+        this->calcDTreeRscores(FeatureLevel::low, upperSize);
+    }
+    else if (rankerName == "highhigh")
+    {
+        MasterRanker::throwUnsupportedRanker(rankerName);
+    }
     else
-        return;  // Do nothing - break from function, not supported.
+    {
+        // Select the lowFC
+        lowletorfeats::base::FeatureKey fKey;
+        if (rankerName == "tfidf")
+            fKey = lowletorfeats::base::FeatureKey("tfidf", "tfidf", "full");
+        else if (rankerName == "bm25f")
+            fKey = lowletorfeats::base::FeatureKey("okapi", "bm25f", "full");
+        else
+            MasterRanker::throwUnsupportedRanker(rankerName);
 
-    // Calculate r-scores in each document
-    this->calcLowRscores(fKey, upperSize);
+        // Calculate r-scores in each document
+        this->calcLowRscores(fKey, upperSize);
+    }
+
     // Sort the result page by the r-score
     std::sort(
         this->resultPage.begin(), this->resultPage.begin() + upperSize,
@@ -137,16 +148,51 @@ textalyzer::AnlyzerFunType<std::string> MasterRanker::analyzerFun =
 
 /* Private class methods */
 
-void MasterRanker::calcLowRscores(
-    lowletorfeats::base::FeatureKey const & fKey, std::size_t upperSize)
+/**
+ * @brief Get a view of the resultPage from 0 to upperSize.
+ *  // TODO: View of values instead of copy.
+ *
+ * @param upperSize
+ * @return base::ResultPage
+ */
+base::ResultPage MasterRanker::getUpperRpage(std::size_t & upperSize)
 {
     // Handle upperSize that is too large
     if (upperSize > this->resultPage.size())
         upperSize = resultPage.size();  // To large, set to .end()
 
-    // Create the lowFC from the upperSize range
-    base::ResultPage upperResultPage(  // TODO: View not copy
+    // Create the upperResultPage from the upperSize range
+    base::ResultPage upperResultPage(
         this->resultPage.begin(), this->resultPage.begin() + upperSize);
+
+    return upperResultPage;
+}
+
+/**
+ * @brief Rank and sort using a decision tree ensemble model created with
+ *  Treelite and using the indicated level of features.
+ *
+ * @param featureLevel
+ * @param upperSize
+ */
+void MasterRanker::calcDTreeRscores(
+    FeatureLevel const & featureLevel, std::size_t upperSize)
+{
+    if (featureLevel == FeatureLevel::low)
+    {
+        /* code */
+    }
+    else  // featureLevel == FeatureLevel::high
+    {
+        /* code */
+    }
+}
+
+void MasterRanker::calcLowRscores(
+    lowletorfeats::base::FeatureKey const & fKey, std::size_t upperSize)
+{
+    // Create the lowFC from the upperSize range
+    base::ResultPage upperResultPage = this->getUpperRpage(upperSize);
     lowletorfeats::FeatureCollector lowFC(upperResultPage, this->queryTfMap);
     lowFC.setAnalyzerFunction(MasterRanker::analyzerFun);
 
@@ -160,6 +206,13 @@ void MasterRanker::calcLowRscores(
         this->resultPage[i]["rscore"] =
             std::to_string(lowFCDocs[i].getFeatureValue(fKey));
     }
+}
+
+/* Private static class methods */
+
+void MasterRanker::throwUnsupportedRanker(std::string const & rankerName)
+{
+    throw std::runtime_error("Unsupported ranker name '" + rankerName + "'");
 }
 
 }  // namespace rankandsort
