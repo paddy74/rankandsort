@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <lowletorfeats/base/stdDef.hpp>
 #include <rankandsort/base/stdDef.hpp>
 #include <string>

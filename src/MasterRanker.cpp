@@ -5,7 +5,7 @@
 #include <rankandsort/MasterRanker.hpp>
 #include <textalyzer/utils.hpp>
 
-#include "model/header.h"
+#include "models/lowHighModel.h"
 
 namespace rankandsort
 {
