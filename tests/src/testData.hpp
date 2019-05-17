@@ -1,20 +1,20 @@
 #pragma once
 
-#include <lowletorfeats/base/stdDef.hpp>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
-std::pair<std::string, std::vector<lowletorfeats::base::StrStrMap> >
+std::pair<std::string, std::vector<std::unordered_map<std::string, std::string>> >
     getTestData()
 {
-    typedef lowletorfeats::base::StrStrMap StrStrMap;
+    typedef std::unordered_map<std::string, std::string> StrStrMap;
 
     std::string const queryString =
         "Van Helsing's face grow white and purple by turns.";
 
     // Construct raw data
     std::vector<StrStrMap> structDocTextVector{
-        lowletorfeats::base::StrStrMap{
+        StrStrMap{
             {"id", "00000"},
             {"rscore", "5"},
             {"url", "https://youthere.org"},
@@ -51,7 +51,7 @@ std::pair<std::string, std::vector<lowletorfeats::base::StrStrMap> >
              "other. We should neither of us shrink from the task--awful "
              "though it be to contemplate. Euthanasia is an excellent and a "
              "comforting word! I am grateful to whoever invented it."}},
-        lowletorfeats::base::StrStrMap{
+        StrStrMap{
             {"id", "00001"},
             {"rscore", "3"},
             {"url", "https://randomhello.com"},
@@ -111,7 +111,7 @@ std::pair<std::string, std::vector<lowletorfeats::base::StrStrMap> >
              "am afraid, afraid, afraid!--I am afraid of all things--even to "
              "think but I must go on my way. The stake we play for is life "
              "and death, or more than these, and we must not flinch."}},
-        lowletorfeats::base::StrStrMap{
+        StrStrMap{
             {"id", "00002"},
             {"rscore", "1"},
             {"url", "https://uncleanvampire.com"},
