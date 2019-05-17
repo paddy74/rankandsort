@@ -5,6 +5,8 @@
 #include <rankandsort/MasterRanker.hpp>
 #include <textalyzer/utils.hpp>
 
+#include "model/header.h"
+
 namespace rankandsort
 {
 /* Public static class variables */
@@ -77,7 +79,7 @@ void MasterRanker::defaultRankandsort()
 {
     this->rankandsortWith("tfidf", 50);
     this->rankandsortWith("bm25f", 25);
-    // this->rankandsortWith("lowhigh", 10);
+    this->rankandsortWith("lowhigh", 10);
 }
 
 /**
@@ -180,11 +182,11 @@ void MasterRanker::calcDTreeRscores(
 {
     if (featureLevel == FeatureLevel::low)
     {
-        /* code */
+        MasterRanker::throwUnsupportedRanker("highhigh");
     }
     else  // featureLevel == FeatureLevel::high
     {
-        /* code */
+        MasterRanker::throwUnsupportedRanker("highhigh");
     }
 }
 

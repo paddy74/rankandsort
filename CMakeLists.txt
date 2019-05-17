@@ -6,8 +6,14 @@ set(PROJECT_NAME_L rankandsort)
 # Build settings
 # -----------------------------------------------------------------------------
 
-# Request C++17 standard
-# ----------------
+# Set the C standard
+# ------------------
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+
+# Set the C++ standard
+# --------------------
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -18,8 +24,8 @@ OPTION(BUILD_SHARED_LIBS
     "Build ${PROJECT_NAME}.a rather than ${PROJECT_NAME}.so" OFF)
 
 # Include additional cmake/ settings
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-set(CMAKE_BINARY_DIR "${CMAKE_SOURCE_DIR}/build")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_BINARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build")
 
 include(BuildType)
 include(BuildLocation)
@@ -38,13 +44,25 @@ set(libsrc
     src/rankandsort.cpp
 )
 
+set(clibsrc
+#    src/model/main.c
+#    src/model/tu0.c
+#    src/model/tu1.c
+#    src/model/tu2.c
+#    src/model/tu3.c
+#    src/model/tu4.c
+#    src/model/tu5.c
+#    src/model/tu6.c
+#    src/model/tu7.c
+)
+
 # Add the library
 # ---------------
 if(BUILD_SHARED_LIBS)
-    add_library(${PROJECT_NAME_L} OBJECT ${libsrc})
+    add_library(${PROJECT_NAME_L} OBJECT ${libsrc} ${clibsrc})
     add_library(${PROJECT_NAME_L} SHARED $<TARGET_OBJECTS:objlib>)
 else()
-    add_library(${PROJECT_NAME_L} STATIC ${libsrc})
+    add_library(${PROJECT_NAME_L} STATIC ${libsrc} ${clibsrc})
 endif()
 
 # Create an alias
@@ -60,7 +78,7 @@ target_include_directories(${PROJECT_NAME_L}
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_compile_features(${PROJECT_NAME_L} PRIVATE cxx_auto_type)
+#target_compile_features(${PROJECT_NAME_L} PRIVATE cxx_auto_type)
 
 # Include external libs
 # ---------------------
