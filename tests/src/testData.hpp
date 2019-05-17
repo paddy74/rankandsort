@@ -1,10 +1,11 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
-std::pair<std::string, std::vector<std::unordered_map<std::string, std::string>> >
+std::pair<
+    std::string, std::vector<std::unordered_map<std::string, std::string>>>
     getTestData()
 {
     typedef std::unordered_map<std::string, std::string> StrStrMap;
