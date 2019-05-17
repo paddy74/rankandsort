@@ -182,7 +182,44 @@ void MasterRanker::calcDTreeRscores(
 {
     if (featureLevel == FeatureLevel::low)
     {
-        MasterRanker::throwUnsupportedRanker("highhigh");
+        // Calculate feature vector per document into the model's input format
+        std::vector<Entry *> docEntriesVect;
+        {
+            // Calculate the feature vector per document
+            std::vector<std::vector<lowletorfeats::base::FValType>>
+                featureVects;
+            {
+                // Create the lowFC from the upperSize range
+                base::ResultPage upperResultPage =
+                    this->getUpperRpage(upperSize);
+                lowletorfeats::FeatureCollector lowFC(
+                    upperResultPage, this->queryTfMap);
+                lowFC.setAnalyzerFunction(MasterRanker::analyzerFun);
+
+                // Collect the feature set
+                lowFC.collectPresetFeatures();
+                featureVects = lowFC.getFeatureVects();
+            }
+
+            // Construct the usable feature vector
+            for (auto const & docFeats : featureVects)
+            {
+                Entry docEntryArr[docFeats.size()];
+                for (auto const & i : util::lang::indices(docFeats))
+                    docEntryArr[i].fvalue = docFeats.at(i);
+                Entry * docEntryPtr = docEntryArr;
+                docEntriesVect.push_back(docEntryPtr);
+            }
+        }
+
+        // Predict query relevance and assign the r-scores
+        for (auto const & i : util::lang::indices(this->resultPage))
+        {
+            Entry * docEntry = docEntriesVect.at(i);
+            int margin = 5;
+            float const relevanceProb = predict(docEntry, margin);
+            this->resultPage.at(i)["rscore"] = std::to_string(relevanceProb);
+        }
     }
     else  // featureLevel == FeatureLevel::high
     {
