@@ -204,7 +204,7 @@ void MasterRanker::calcDTreeRscores(
             // Construct the usable feature vector
             for (auto const & docFeats : featureVects)
             {
-                Entry docEntryArr[docFeats.size()];
+                Entry docEntryArr[docFeats.size()];  // TODO: Don't use VLAs
                 for (auto const & i : util::lang::indices(docFeats))
                     docEntryArr[i].fvalue = docFeats.at(i);
                 Entry * docEntryPtr = docEntryArr;
