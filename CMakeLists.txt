@@ -22,6 +22,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # -------
 OPTION(BUILD_SHARED_LIBS
     "Build ${PROJECT_NAME}.a rather than ${PROJECT_NAME}.so" OFF)
+OPTION(BUILD_TESTING "Build the testing tree." ON)
 
 # Include additional cmake/ settings
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -34,7 +35,6 @@ include(CompilerFlags)
 # -----------------------------------------------------------------------------
 # Create and set target properties
 # -----------------------------------------------------------------------------
-
 message(STATUS "Setting target properties")
 
 # Set the library sources
@@ -102,7 +102,6 @@ message(STATUS "Setting target properties - done")
 # -----------------------------------------------------------------------------
 # Installation instructions
 # -----------------------------------------------------------------------------
-
 message(STATUS "Installing project")
 
 include(GNUInstallDirs)
@@ -193,4 +192,6 @@ message(STATUS "Exporting project - done")
 # -----------------------------------------------------------------------------
 # Testing
 # -----------------------------------------------------------------------------
-add_subdirectory(tests)
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
