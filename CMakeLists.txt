@@ -84,7 +84,7 @@ target_include_directories(${PROJECT_NAME_L}
 # ---------------------
 target_include_directories(${PROJECT_NAME_L}
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs  # cpp11-range
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/lowletorfeats/include
 )
 
