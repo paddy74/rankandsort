@@ -1,11 +1,11 @@
 #include <iostream>
 #include <rankandsort/rankandsort.hpp>
 
-#include "testData.hpp"
+#include "sampleData.hpp"
 
 int main()
 {
-    auto data = getTestData();
+    auto data = getSampleData();
     auto const & queryString = data.first;
     auto & docVect = data.second;
 
@@ -19,7 +19,7 @@ int main()
     }
     std::cout << std::endl;
 
-    rankandsort::rankandsort(queryString, docVect);
+    rankandsort::rankandsort(queryString, docVect, "tfidf", 10);
 
     std::cout << "\nSorted:" << std::endl;
     for (auto const & doc : docVect)

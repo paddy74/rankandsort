@@ -20,9 +20,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Options
 # -------
-OPTION(BUILD_SHARED_LIBS
-    "Build ${PROJECT_NAME}.a rather than ${PROJECT_NAME}.so" OFF)
-OPTION(BUILD_TESTING "Build the testing tree." ON)
+OPTION(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+OPTION(BUILD_TESTING "Build the testing tree" ON)
+OPTION(BUILD_SAMPLES "Build sample applications" ON)
 
 # Include additional cmake/ settings
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -194,4 +194,8 @@ message(STATUS "Exporting project - done")
 # -----------------------------------------------------------------------------
 if(BUILD_TESTING)
     add_subdirectory(tests)
+endif()
+
+if(BUILD_SAMPLES)
+    add_subdirectory(samples)
 endif()
