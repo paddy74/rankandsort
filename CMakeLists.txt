@@ -21,16 +21,26 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Options
 # -------
 OPTION(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+OPTION(USE_ONLY_STATIC_LIBS "Use only static library dependencies" OFF)
 OPTION(BUILD_TESTING "Build the testing tree" ON)
+OPTION(ENABLE_COVERAGE "Enable code coverage reporting. Also enables testing" OFF)
 OPTION(BUILD_SAMPLES "Build sample applications" ON)
 
 # Include additional cmake/ settings
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules"
+)
 set(CMAKE_BINARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/build")
 
-include(BuildType)
+# Include CMake modules
 include(BuildLocation)
+include(BuildType)
+
+include(ClangFormat)
+include(CodeAnalysis)
 include(CompilerFlags)
+include(InitSubmodules)
 
 # -----------------------------------------------------------------------------
 # Create and set target properties
@@ -70,52 +80,62 @@ target_include_directories(${PROJECT_NAME_L}
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-#target_compile_features(${PROJECT_NAME_L} PRIVATE cxx_auto_type)
+add_target_compiler_flags(${PROJECT_NAME_L})
 
-# Include external libs
-# ---------------------
+message(STATUS "Setting target properties - done")
+
+# -----------------------------------------------------------------------------
+# Locate and link external libraries
+# -----------------------------------------------------------------------------
+message(STATUS "Linking external libraries")
+
+# Hold the project's export targets
+set(PROJECT_EXPORT_TARGETS ${PROJECT_NAME_L})
+
+# Add include directories to the target
 target_include_directories(${PROJECT_NAME_L}
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/libs  # cpp11-range
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/lowletorfeats/include
 )
 
-# Add sub-directories
+# Add sub-directories to the build
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/libs/lowletorfeats)
 
-# Link against the project
+# Link libraries against the project
 target_link_libraries(${PROJECT_NAME_L}
     PRIVATE
         lowletorfeats
 )
 
-message(STATUS "Setting target properties - done")
+message(STATUS "Linking external libraries - done")
 
 # -----------------------------------------------------------------------------
 # Installation instructions
 # -----------------------------------------------------------------------------
-message(STATUS "Installing project")
-
+# Generates installation rules used to implement 'make install' and packaging
+# Installing makes a package generally available to the users of the system by
+#   installing its components into a well-known prefix (e.g. /usr, /usr/local)
 include(GNUInstallDirs)
 set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
 
-# Create a a version file for the project
+# Create a a version file for the project from the cmake/ configversion file
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake  # output
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY AnyNewerVersion
 )
 
-# Create a config file for the project
+# Create a config file for the project from the cmake/ config file
 configure_package_config_file(
-    ${CMAKE_CURRENT_LIST_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    INSTALL_DESTINATION
+    ${CMAKE_CURRENT_LIST_DIR}/cmake/${PROJECT_NAME}Config.cmake.in  # input
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake  # output
+    INSTALL_DESTINATION  # Where the config file will be installed
         ${INSTALL_CONFIGDIR}
 )
 
-# Install the ProjectConfig.cmake and ProjectConfigVersion.cmake
+# Install the <package>Config.cmake and <package>ConfigVersion.cmake files
 install(
     FILES
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
@@ -125,21 +145,23 @@ install(
 )
 
 # Add the library to the "export-set"
+# Specifies rules for installing targets from a project
 install(
     TARGETS
-        ${PROJECT_NAME_L}
-    EXPORT
+        ${PROJECT_EXPORT_TARGETS}
+    EXPORT  # Associate installed target files with the export
         ${PROJECT_NAME_L}-targets
-    LIBRARY DESTINATION
-        ${CMAKE_INSTALL_LIBDIR}
-    ARCHIVE DESTINATION
-        ${CMAKE_INSTALL_LIBDIR}
-    PUBLIC_HEADER DESTINATION
-        ${CMAKE_INSTALL_INCLUDEDIR}
+    LIBRARY
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PUBLIC_HEADER
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 set_target_properties(${PROJECT_NAME_L} PROPERTIES EXPORT_NAME ${PROJECT_NAME})
 
+# Installs contents of include/ to the destination directory
 install(
     DIRECTORY
         include/
@@ -147,28 +169,29 @@ install(
         ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-# Export the targets to a script
+# Generates and installs a CMake file for importing targets from the install
+#   tree to other projects
+# What is installed by 'make install'
 install(
-    EXPORT
+    EXPORT  # Install the export file itself
         ${PROJECT_NAME_L}-targets
-    FILE
+    FILE  # Specify name of generated file
         ${PROJECT_NAME}Targets.cmake
-    NAMESPACE
-        ${PROJECT_NAME}::
-    DESTINATION
+    NAMESPACE  # Prepend to the target name
+        ${PROJECT_NAME}::  # ${PROJECT_NAME}::${PROJECT_NAME_L}
+    DESTINATION  # Where to install
         ${INSTALL_CONFIGDIR}
 )
-
-message(STATUS "Installing project - done")
 
 # -----------------------------------------------------------------------------
 # Export from the build tree
 # -----------------------------------------------------------------------------
-message(STATUS "Exporting project")
+# Allows use of find_package without the use of a find module
 
-# Allow use of find_package(MyLib)
+# Create a file that may be included by outside project to import targets from
+#   the current project's build tree
 export(
-    EXPORT
+    EXPORT  # Export file generated by install(TARGETS)
         ${PROJECT_NAME_L}-targets
     FILE
         ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake
@@ -179,12 +202,14 @@ export(
 # Register package
 export(PACKAGE ${PROJECT_NAME})
 
-message(STATUS "Exporting project - done")
+# -----------------------------------------------------------------------------
+# Testing, samples, and code coverage
+# -----------------------------------------------------------------------------
+if(BUILD_TESTING OR ENABLE_COVERAGE)  # Handles code coverage
+    # Enable construction of test target
+    include(CTest)
+    enable_testing()
 
-# -----------------------------------------------------------------------------
-# Testing
-# -----------------------------------------------------------------------------
-if(BUILD_TESTING)
     add_subdirectory(tests)
 endif()
 
