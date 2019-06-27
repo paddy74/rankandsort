@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
-project(RankAndSort VERSION 0.1 LANGUAGES CXX)
+project(RankAndSort VERSION 0.1)
 set(PROJECT_NAME_L rankandsort)
 
 # -----------------------------------------------------------------------------
@@ -45,15 +45,7 @@ set(libsrc
 )
 
 set(clibsrc
-#    src/model/main.c
-#    src/model/tu0.c
-#    src/model/tu1.c
-#    src/model/tu2.c
-#    src/model/tu3.c
-#    src/model/tu4.c
-#    src/model/tu5.c
-#    src/model/tu6.c
-#    src/model/tu7.c
+    src/models/lowHighModel.c
 )
 
 # Add the library
