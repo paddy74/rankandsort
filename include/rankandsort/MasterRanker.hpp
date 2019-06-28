@@ -54,7 +54,7 @@ private:
     /* Private member variables */
 
     std::string queryText;
-    lowletorfeats::base::StrUintMap queryTfMap;
+    lowletorfeats::base::StrSizeMap queryTfMap;
 
     base::ResultPage & resultPage;  // TODO: Poor form to use by reference
 
